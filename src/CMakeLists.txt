@@ -1,15 +1,7 @@
-file(GLOB SOURCES
-    Components/*.cpp
-    Components/*.hpp
-    Drawables/*.cpp
-    Drawables/*.hpp
-    States/*.cpp
-    States/*.hpp
-    Systems/*.cpp
-    Systems/*.hpp
-
+file(GLOB_RECURSE SOURCES
     *.cpp
     *.hpp
+    *.inl
 )
 
 add_executable(LD52 ${SOURCES})

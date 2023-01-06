@@ -26,14 +26,16 @@ void Menu::SetMenuState(entt::registry& registry)
 Menu::Menu(entt::registry& registry, entt::entity entity)
     : m_registry(registry)
     , m_entity(entity)
-    , m_time()
+    , m_bounce(-2, 2, 2.f)
 {
     m_registry.emplace<Components::State>(entity);
-    m_registry.emplace<Components::Drawable>(entity, *this);
+    m_registry.emplace<Components::Drawable>(entity, this);
     m_registry.emplace<Components::Layers::UI>(entity);
 
     m_registry.emplace<Components::UpdatingEvery>(entity, [&](float dt) {
-        m_time += dt;
+        m_bounce.advance(dt);
+        if (m_bounce.finished())
+            m_bounce.reverse();
     });
 
     m_registry.ctx().get<entt::dispatcher>().sink<Events::Input>().connect<&Menu::onInput>(*this);
@@ -51,7 +53,7 @@ Menu::~Menu()
 
 void Menu::onInput(const Events::Input& inp) const
 {
-    if (inp.event.type != sf::Event::KeyReleased || inp.event.key.code != sf::Keyboard::Enter || m_time < 0.5f)
+    if (inp.event.type != sf::Event::KeyReleased || inp.event.key.code != sf::Keyboard::Enter)
         return;
 
     printf("Switching to game state...\n");
@@ -75,7 +77,7 @@ void Menu::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
     // menuText.setFillColor(sf::Color::White);
     // menuText.setOutlineColor(sf::Color::Black);
     // menuText.setOutlineThickness(2.f);
-    menuText.setRotation(sf::degrees(std::cos(m_time * 2.f)));
+    menuText.setRotation(sf::degrees(m_bounce.getValue()));
 
     auto bounds = menuText.getLocalBounds();
     menuText.setOrigin({ bounds.width / 2.f, bounds.height / 2.f });

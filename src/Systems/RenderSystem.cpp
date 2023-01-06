@@ -24,7 +24,7 @@ void RenderSystem::draw(const sf::Time& time, sf::RenderTarget& target)
     auto realView = target.getView();
 
     for (auto &&[ent, drawable]: m_registry.view<Components::Drawable, Components::Layers::Background>().each()) {
-        target.draw(drawable.drawable);
+        target.draw(*drawable.drawable);
     }
 
     target.setView(m_gameView);
@@ -32,9 +32,9 @@ void RenderSystem::draw(const sf::Time& time, sf::RenderTarget& target)
     for (auto &&[ent, drawable]: m_registry.view<Components::Drawable, Components::Layers::Game>().each())
     {
         if (auto* transform = m_registry.try_get<Components::Transformable>(ent))
-            target.draw(drawable.drawable, transform->transformable);
+            target.draw(*drawable.drawable, transform->transformable);
         else
-            target.draw(drawable.drawable);
+            target.draw(*drawable.drawable);
     }
 
     m_gameView = target.getView();
@@ -42,9 +42,9 @@ void RenderSystem::draw(const sf::Time& time, sf::RenderTarget& target)
     target.setView(realView);
 
     for (auto &&[ent, drawable]: m_registry.view<Components::Drawable, Components::Layers::UI>().each()) {
-        target.draw(drawable.drawable);
+        target.draw(*drawable.drawable);
     }
     for (auto &&[ent, drawable]: m_registry.view<Components::Drawable, Components::Layers::Overlay>().each()) {
-        target.draw(drawable.drawable);
+        target.draw(*drawable.drawable);
     }
 }

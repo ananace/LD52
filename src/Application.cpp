@@ -65,7 +65,7 @@ void Application::run()
               fps = 0;
           }
         });
-        m_mainRegistry.emplace<Components::Drawable>(metaEnt, DTString);
+        m_mainRegistry.emplace<Components::Drawable>(metaEnt, &DTString);
         m_mainRegistry.emplace<Components::Layers::Overlay>(metaEnt);
     }
 #endif

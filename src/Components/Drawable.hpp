@@ -8,7 +8,7 @@ namespace Components
 
 struct Drawable
 {
-    sf::Drawable& drawable;
+    sf::Drawable* drawable;
     float z{};
 };
 

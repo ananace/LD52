@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Tween.hpp"
 #include "../Events/Input.hpp"
 #include <SFML/Graphics/Drawable.hpp>
 #include <entt/entity/entity.hpp>
@@ -23,7 +24,7 @@ public:
 private:
     entt::registry& m_registry;
     entt::entity m_entity;
-    float m_time;
+    TweenF<TweenAlgorithm::Quint, TweenEase::InOut> m_bounce;
     std::vector<entt::entity> m_entities;
 };
 
