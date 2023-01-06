@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=LD52 (Ananace)
+Icon=com.ldjam.ananace.LD52
+Exec=LD52
+Path=@CMAKE_INSTALL_PREFIX@/bin/LD52
+Categories=Game;

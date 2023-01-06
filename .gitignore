@@ -1,0 +1,6 @@
+.cache/
+build*/
+dist/.flatpak-builder
+dist/build*
+dist/*.flatpak
+compile_commands.json

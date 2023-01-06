@@ -1,0 +1,51 @@
+---
+app-id: com.ldjam.ananace.LD52
+branch: master
+runtime: org.freedesktop.Platform
+runtime-version: "22.08"
+sdk: org.freedesktop.Sdk
+
+command: LD52
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --device=dri
+
+modules:
+  - name: EnTT
+    buildsystem: cmake-ninja
+    sources:
+      - type: archive
+        url: https://github.com/skypjack/entt/archive/refs/tags/v3.11.1.zip
+        sha256: 7cd55b71d6432f03436ee724e8b461a4099b6c749aeec0c3bc5af5893ed5b61a
+    cleanup:
+      - include
+      - lib
+  - name: SFML
+    buildsystem: cmake-ninja
+    config-opts:
+      - "-DSFML_BUILD_NETWORK=OFF"
+    sources:
+      - type: archive
+        url: https://github.com/SFML/SFML/archive/718195bf25eb747a549207daf734976a44ec6545.zip
+        sha256: 633b6a3b9fd65ca0e7e84e4d1ea87b553dde2e3b12479ca8e6ffcf4cb5de81fa
+    cleanup:
+      - include
+      - lib/cmake
+      - lib/pkgconfig
+      - share
+
+  - name: LD52
+    buildsystem: cmake-ninja
+    config-opts:
+      - "-DUSE_SYSTEM_DEPS=ON"
+    sources:
+      - type: dir
+        path: ".."
+        skip:
+          - .cache
+          - .git
+          - build
+    # - type: git
+    #   url: https://github.com/ananace/LD52.git
+    #   tag: compo
