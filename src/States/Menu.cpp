@@ -53,7 +53,7 @@ Menu::~Menu()
 
 void Menu::onInput(const Events::Input& inp) const
 {
-    if (inp.event.type != sf::Event::KeyReleased || inp.event.key.code != sf::Keyboard::Enter)
+    if (inp.event.type != sf::Event::MouseButtonReleased || inp.event.mouseButton.button != sf::Mouse::Left)
         return;
 
     printf("Switching to game state...\n");
@@ -81,15 +81,27 @@ void Menu::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
 
     auto bounds = menuText.getLocalBounds();
     menuText.setOrigin({ bounds.width / 2.f, bounds.height / 2.f });
-    menuText.setPosition({ target.getSize().x / 2.f, target.getSize().y / 3.f });
+    menuText.setPosition({ target.getSize().x / 2.f, target.getSize().y / 4.f });
+    target.draw(menuText, states);
+
+    menuText.clear();
+    menuText.setRotation(sf::degrees(0));
+    menuText.setFontSize(32u);
+
+    menuText.addPart({ {"Pick "},  sf::Color::White, sf::Color::Black, 2.f });
+    menuText.addPart({ {"ripe"},   sf::Color::White, sf::Color::Black, 4.f });
+    menuText.addPart({ {" fruit"}, sf::Color::White, sf::Color::Black, 2.f });
+
+    bounds = menuText.getLocalBounds();
+    menuText.setOrigin({ bounds.width / 2.f, bounds.height / 2.f });
+    menuText.move({ 0, target.getSize().y / 4.f });
     target.draw(menuText, states);
 
     menuText.clear();
     menuText.setRotation(sf::degrees(0));
     menuText.setFontSize(72u);
 
-    menuText.addPart({ {"Press "},   sf::Color::White, sf::Color::Black, 2.f });
-    menuText.addPart({ {"<Enter>"},  sf::Color::White, sf::Color::Black, 2.f, true });
+    menuText.addPart({ {"Click"},  sf::Color::White, sf::Color::Black, 2.f, true });
     menuText.addPart({ {" to play"}, sf::Color::White, sf::Color::Black, 2.f });
 
     bounds = menuText.getLocalBounds();

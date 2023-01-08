@@ -18,6 +18,7 @@ public:
     RenderSystem(entt::registry& registry);
 
     void setGameView(const sf::View& gameView);
+    sf::View getGameView() const;
 
     void draw(const sf::Time& time, sf::RenderTarget& target);
 

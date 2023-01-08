@@ -43,10 +43,11 @@ constexpr void Tween<T, Alg, Ease>::start(T start, T end, float duration)
 }
 
 template<typename T, TweenAlgorithm Alg, TweenEase Ease>
-constexpr void Tween<T, Alg, Ease>::start(T start, T end)
+constexpr void Tween<T, Alg, Ease>::start(T end, float duration)
 {
-    m_start = start;
+    m_start = m_end;
     m_end = end;
+    m_duration = duration;
     m_elapsed = 0;
 }
 
@@ -95,10 +96,7 @@ constexpr T Tween<T, Alg, Ease>::getValue() const
 template<typename T, TweenAlgorithm Alg, TweenEase Ease>
 constexpr T Tween<T, Alg, Ease>::getValueAt(float percent) const
 {
-    if constexpr (std::is_integral<T>::value)
-        return T(std::round(TweenAlgorithms<Alg>::template Tween<Ease>(percent, float(m_start), float(m_end))));
-    else
-        return T(TweenAlgorithms<Alg>::template Tween<Ease>(percent, float(m_start), float(m_end)));
+    return m_start + (m_end - m_start) * TweenAlgorithms<Alg>::template Tween<Ease>(percent, 0.f, 1.f);
 }
 
 template<>

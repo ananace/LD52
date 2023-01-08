@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 #include <string>

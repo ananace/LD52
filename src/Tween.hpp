@@ -53,8 +53,8 @@ public:
     constexpr void reset();
     constexpr void reverse();
     constexpr void start(T start, T end, float duration);
-    constexpr void start(T start, T end);
     constexpr void start(T end);
+    constexpr void start(T end, float duration);
 
     constexpr void advance(float aDeltaTime);
     constexpr bool finished() const;

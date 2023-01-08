@@ -1,20 +1,38 @@
 #include "Pineapple.hpp"
+#include "../Fruit.hpp"
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/ConvexShape.hpp>
+#include <random>
 #include <cmath>
 
 #include "../../Drawables/CappedLineStrip.hpp"
+#include <entt/entity/entity.hpp>
 
 using namespace Plants;
 
-namespace
+Pineapple::Pineapple()
 {
+    setFruit(entt::null);
+}
 
-constexpr sf::Color StemColor { 51, 102, 0 };
-constexpr sf::Color LeafColor { 115, 170, 29 };
-constexpr sf::Color UnripeFruitColor { 159, 203, 23 };
-constexpr sf::Color RipeFruitColor { 206, 196, 22 };
+void Pineapple::update(float dt)
+{
+    if (m_fruit != entt::null)
+        return;
 
+    if (m_growthTime > 0)
+    {
+        m_growthTime -= dt;
+        return;
+    }
+}
+
+void Pineapple::setFruit(entt::entity fruit)
+{
+    m_fruit = fruit;
+
+    std::random_device rand;
+    m_growthTime = std::uniform_real_distribution(GrowthTimes::FruitGrowth, GrowthTimes::FruitGrowth + GrowthTimes::FruitGrowth * GrowthTimes::FruitGrowthDeviation)(rand);
 }
 
 void Pineapple::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
@@ -23,7 +41,7 @@ void Pineapple::draw(sf::RenderTarget& target, const sf::RenderStates& states) c
     stateCopy.transform *= getTransform();
 
     Drawables::CappedLineStrip strip;
-    strip.setFillColor(StemColor);
+    strip.setFillColor(Colors::Stem);
     strip.setThickness(5.f);
 
     // 0, 0 origin
@@ -36,7 +54,7 @@ void Pineapple::draw(sf::RenderTarget& target, const sf::RenderStates& states) c
 
     target.draw(strip, stateCopy);
 
-    strip.setFillColor(LeafColor);
+    strip.setFillColor(Colors::Leaf);
     strip.setThickness(2.5f);
     for (int i = 0; i < 7; ++i)
     {
@@ -72,31 +90,56 @@ void Pineapple::draw(sf::RenderTarget& target, const sf::RenderStates& states) c
         target.draw(strip, stateCopy);
     }
 
+    //stateCopy.transform.translate({ 0, -90 }).rotate(sf::degrees(90));
+//target.draw(m_fruit, stateCopy);
+}
+
+template<>
+void Fruit<Pineapple>::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
+{
+    auto stateCopy = states;
+    stateCopy.transform *= getTransform();
+    stateCopy.transform.translate({ 15, 0 });
+    stateCopy.transform.scale({ m_fruitScale.getValue(), m_fruitScale.getValue() });
+
+    Drawables::CappedLineStrip strip;
+    auto col = PlantColors::Leaf;
+    col.a = m_fruitAlpha.getValue();
+    strip.setFillColor(col);
     strip.setThickness(5.f);
     for (int i = 0; i < 3; ++i)
     {
-        sf::Vector2f point(0, -125 - i * -7.f);
+        sf::Vector2f point(-30 + i * 7.f, 0);
 
         for (int j = 0; j < 2; ++j)
         {
             strip.clear();
             strip.addPoint(point);
 
-            strip.addPoint(point - sf::Vector2f{ 10 * (0.5f - j) * 2, 15 });
+            strip.addPoint(point - sf::Vector2f{ 15, 10 * (0.5f - j) * 2 });
             target.draw(strip, stateCopy);
         }
     }
 
     sf::ConvexShape fruit;
-    fruit.setFillColor(RipeFruitColor);
+    col = sf::toColor(m_fruitColor.getValue()) * (m_hover ? 1.25f : 1.f);
+    col.a = m_fruitAlpha.getValue();
+    fruit.setFillColor(col);
+    // if (m_hover || m_fruitStage == FruitStage::Destroyed)
+    // {
+    //     printf("Fruit (rgba(%d, %d, %d, %d)->rgba(%d, %d, %d, %d)) rgba(%d, %d, %d, %d)\n",
+    //            m_fruitColor.getStart().r,m_fruitColor.getStart().g,m_fruitColor.getStart().b,m_fruitColor.getStart().a,
+    //            m_fruitColor.getEnd().r,m_fruitColor.getEnd().g,m_fruitColor.getEnd().b,m_fruitColor.getEnd().a,
+    //            fruit.getFillColor().r, fruit.getFillColor().g, fruit.getFillColor().b, fruit.getFillColor().a);
+    // }
     fruit.setPointCount(11);
-    fruit.setPosition({ 0, -105 });
+    fruit.setPosition({ -15, 0 });
 
     for (int i = 0; i < 11; ++i)
     {
         auto ang = sf::degrees((360.f / 11.f) * i);
         float rad = ang.asRadians();
-        float dist = 0.5 + std::cos(3.14 + rad * 2) / 2;
+        float dist = 0.5 + std::cos(rad * 2) / 2;
 
         fruit.setPoint(i, { std::cos(rad) * 15 * (0.5f + dist / 2.f), std::sin(rad) * 15 * (0.5f + dist / 2.f) });
     }

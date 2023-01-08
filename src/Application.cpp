@@ -5,6 +5,7 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Graphics/Text.hpp>
 
+#include "Systems/InteractionSystem.hpp"
 #include "Systems/RenderSystem.hpp"
 #include "Systems/UpdateSystem.hpp"
 
@@ -12,6 +13,7 @@
 #include "Components/Layer.hpp"
 #include "Components/Updating.hpp"
 #include "Events/Input.hpp"
+#include "Events/Resize.hpp"
 
 #include "States/Menu.hpp"
 
@@ -32,6 +34,7 @@ void Application::run()
 {
     Systems::RenderSystem renderSys(m_mainRegistry);
     Systems::UpdateSystem updateSys(m_mainRegistry);
+    Systems::InteractionSystem interactSys(m_mainRegistry, m_window);
 
     sf::View gameView, mainView;
     mainView.setSize(sf::Vector2f(m_window.getSize()));
@@ -85,6 +88,8 @@ void Application::run()
         auto dt = frameClock.getElapsedTime();
         frameClock.restart();
 
+        interactSys.setView(renderSys.getGameView());
+
         for (sf::Event ev; m_window.pollEvent(ev);)
         {
             switch (ev.type)
@@ -93,7 +98,8 @@ void Application::run()
             case sf::Event::Resized:
                 mainView.setSize(sf::Vector2f(m_window.getSize()));
                 mainView.setCenter(mainView.getSize() / 2.f);
-                printf("Windows resized to %.0fx%.0f\n", mainView.getSize().x, mainView.getSize().y);
+                m_eventDispatcher.trigger(Events::Resize{ev});
+                // printf("Windows resized to %.0fx%.0f\n", mainView.getSize().x, mainView.getSize().y);
                 break;
             case sf::Event::KeyReleased:
                 if (ev.key.alt && ev.key.code == sf::Keyboard::Enter)
@@ -107,10 +113,14 @@ void Application::run()
                     m_window.setVerticalSyncEnabled(true);
                 }
             case sf::Event::KeyPressed:
+            case sf::Event::MouseWheelScrolled:
+            case sf::Event::MouseButtonReleased:
+                m_eventDispatcher.trigger(Events::Input{ev});
+                break;
+
             case sf::Event::MouseMoved:
             case sf::Event::MouseButtonPressed:
-            case sf::Event::MouseButtonReleased:
-            case sf::Event::MouseWheelScrolled:
+                interactSys.handleEvent(ev);
                 m_eventDispatcher.trigger(Events::Input{ev});
                 break;
 
